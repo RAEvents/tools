@@ -111,23 +111,28 @@ document.getElementById("verify").addEventListener("click", async () => {
         elem.querySelector(".timestamp").textContent = obj.timestamp;
     };
 
-    const sleepTime = 500;
+    const sleepTime = 1000;
 
     for (const elem of output.querySelectorAll(".game")) {
-        render(elem, checkGame);
+        await render(elem, checkGame);
         await sleep(sleepTime);
     }
 
     for (const elem of output.querySelectorAll(".achievement")) {
-        render(elem, checkAchievement);
+        await render(elem, checkAchievement);
         await sleep(sleepTime);
     }
+
+    document.getElementById("username").disabled = false;
+    document.getElementById("startdate").disabled = false;
 });
 
 document.getElementById("clear").addEventListener("click", () => {
     document.getElementById("username").value = "";
     document.getElementById("submission").value = "";
     document.getElementById("output").innerHTML = "";
+    document.getElementById("username").disabled = false;
+    document.getElementById("startdate").disabled = false;
     switchToTab("submission");
 });
 
@@ -209,7 +214,7 @@ async function getAchievementInfo(auth, id) {
 
 async function checkAchievement(auth, username, id, date) {
     const achievementInfo = await getAchievementInfo(auth, id);
-    const count = 200;
+    const count = 300;
     const url = `https://retroachievements.org/API/API_GetAchievementUnlocks.php?${auth}&a=${id}&c=${count}`;
 
     let result = null;
@@ -222,7 +227,7 @@ async function checkAchievement(auth, username, id, date) {
             }
         }
         if (o + count > unlocks.UnlocksCount) break;
-        await sleep(500);
+        await sleep(1000);
     }
 
     if (result) {
