@@ -209,7 +209,7 @@ async function getAchievementInfo(auth, id) {
 
 async function checkAchievement(auth, username, id, date) {
     const achievementInfo = await getAchievementInfo(auth, id);
-    const count = 100;
+    const count = 200;
     const url = `https://retroachievements.org/API/API_GetAchievementUnlocks.php?${auth}&a=${id}&c=${count}`;
 
     let result = null;
@@ -222,7 +222,7 @@ async function checkAchievement(auth, username, id, date) {
             }
         }
         if (o + count > unlocks.UnlocksCount) break;
-        await sleep(100);
+        await sleep(500);
     }
 
     if (result) {
