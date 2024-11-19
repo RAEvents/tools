@@ -10,20 +10,33 @@
             <input id="username" type="text"></input>
             <label for="startdate">Start Date:</label>
             <input id="startdate" type="date"></input>
-            <label>Submission:</label>
-            <textarea></textarea>
-            <div id="output"></div>
+            <div id="tabs">
+                <div id="tabSubmission" class="selected" data-target="submission">Submission</div>
+                <div id="tabOutput" data-target="output">Output</div>
+            </div>
+            <div id="content">
+                <textarea id="submission"></textarea>
+                <div id="output"></div>
+            </div>
+            <div id="options">
+                <button id="optionResetAuth">Reset Auth</button>
+                <label>
+                    <input id="optionCheckDate" type="checkbox" checked></input>
+                    Check date
+                </label>
+            </div>
+            <button id="clear">Clear</button>
             <button id="verify">Verify</button>
         </main>
         <template id="authModalTemplate">
             <div class="authModal">
                 <div>
-                    <label for="username">Username:</label>
+                    <label>Username:</label>
                     <input name="username" type="text"></input>
-                    <label for="username">API Key:</label>
+                    <label>API Key:</label>
                     <input name="apikey" type="password"></input>
-                    <label for="saveinfo">
-                        <input id="saveinfo" type="checkbox"></input>
+                    <label>
+                        <input name="saveinfo" type="checkbox"></input>
                         Save Info
                     </label>
                     <button>Ok</button>

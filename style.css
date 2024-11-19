@@ -28,52 +28,71 @@ main, div.authModal > div {
     padding: 1rem;
 }
 
-textarea, #output {
-    height: 50em;
+#content {
+    height: 40em;
     width: 50em;
     grid-column: 2;
+    grid-row: span 2;
+    z-index: 1;
     font-size: 1rem;
+    display: grid;
 }
 
 textarea {
     white-space: pre;
     overflow-wrap: normal;
     overflow-x: scroll;
+    font-size: inherit;
 }
 
 main > label, div.authModal label {
     font-size: 1.25rem;
 }
 
-main > button {
-    grid-column: 2;
-}
-
-div.authModal {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: rgba(0, 0, 0, 0.6);
+#tabs {
     display: flex;
-    align-items: center;
-    justify-content: center;
+    flex-direction: column;
+    padding-top: 0.5em;
+    margin-right: calc(-1rem - 2px);
+    z-index: 0;
 }
 
-div.authModal > div {
-    display: grid;
-    grid-template: auto / auto auto;
+#tabs > div {
+    padding: 0.5em;
+    border-radius: 2px;
+    border: 1px solid #777;
+    margin-top: -1px;
+    text-align: center;
+    cursor: pointer;
+}
+
+#tabs > .selected {
+    background-color: #eee;
+    z-index: 1;
+}
+
+#tabs > :not(.selected) {
+    background-color: #bbb;
+    margin-left: 0.5em;
+}
+
+#options {
+    display: flex; 
+    flex-direction: column-reverse;
     gap: 1rem;
 }
 
-div.authModal > div > input[name="apikey"] {
-    min-width: 20rem;
+button#clear {
+    grid-column: 1;
+}
+
+button#verify {
+    grid-column: 2;
 }
 
 #output {
     display: none;
-    background-color: #ccc;
+    background-color: #eee;
     border: 1px solid #777;
     border-radius: 4px;
     padding: 1rem;
@@ -101,6 +120,10 @@ div.authModal > div > input[name="apikey"] {
     align-items: center;
     gap: 1rem;
     min-height: 32px;
+}
+
+#output div.game:hover, #output div.achievement:hover {
+    background-color: white;
 }
 
 #output a.title {
@@ -142,6 +165,7 @@ div.status {
     align-items: center;
     justify-content: center;
     z-index: 0;
+    padding-right: 10px;
 }
 
 div.status::after {
@@ -183,4 +207,26 @@ div.status.success.mastered::after {
     content: "";
     background-color: gold;
     animation: none;
+}
+
+div.authModal {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+div.authModal > div {
+    display: grid;
+    grid-template: auto / auto auto;
+    gap: 1rem;
+}
+
+div.authModal > div > input[name="apikey"] {
+    min-width: 20rem;
 }

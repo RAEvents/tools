@@ -1,18 +1,21 @@
-const sleep = ms => new Promise(resolve => setTimeout(() => resolve(), 500));
+const sleep = ms => new Promise(resolve => setTimeout(() => resolve(), ms));
 
 let params = new URL(window.location).searchParams;
 if (params.has("data")) {
     const data = JSON.parse(window.atob(params.get("data")));
-    document.querySelector("input#username").value = data.username;
-    document.querySelector("main > textarea").value = data.links;
+    document.getElementById("username").value = data.username;
+    document.getElementById("submission").value = data.links;
 }
 
-let date = new Date();
-document.querySelector("input#startdate").valueAsDate = new Date(
-    date.getUTCFullYear(),
-    date.getUTCMonth(),
-    1
-);
+function resetDatePicker() {
+    let now = new Date();
+    document.getElementById("startdate").valueAsDate = new Date(
+        now.getUTCFullYear(),
+        now.getUTCMonth(),
+        1
+    );
+}
+resetDatePicker();
 
 async function getAuthorization() {
     if (!localStorage.getItem("auth")) {
@@ -34,15 +37,15 @@ function showAuthModal() {
 
     return new Promise(resolve => {
         button.addEventListener("click", ev => {
-            let modal = document.body.querySelector("div.authModal");
+            let modal = document.querySelector("div.authModal");
             let auth = {
-                username: modal.querySelector(`input[name="username"]`).value,
-                apikey: modal.querySelector(`input[name="apikey"]`).value,
+                username: modal.querySelector("input[name='username']").value,
+                apikey: modal.querySelector("input[name='apikey']").value,
                 toString: function() {
                     return `z=${this.username}&y=${this.apikey}`;
                 },
             };
-            if (modal.querySelector("#saveinfo").checked) {
+            if (modal.querySelector("input[name='saveinfo']").checked) {
                 localStorage.setItem("auth", JSON.stringify(auth));
             }
             document.body.removeChild(modal);
@@ -53,9 +56,9 @@ function showAuthModal() {
 
 document.getElementById("verify").addEventListener("click", async () => {
     const auth = await getAuthorization();
-    const username = document.querySelector("input#username");
-    const submission = document.querySelector("main > textarea");
-    const date = document.querySelector("input#startdate");
+    const username = document.getElementById("username");
+    const submission = document.getElementById("submission");
+    const date = document.getElementById("startdate");
 
     if (date.value == "") {
         date.style.backgroundColor = "red";
@@ -64,16 +67,14 @@ document.getElementById("verify").addEventListener("click", async () => {
     }
 
     const games = Array.from(
-        submission.value.matchAll("https://retroachievements.org/game/([0-9]+)")
+        submission.value.matchAll("https://(?:www.)?retroachievements.org/game/([0-9]+)")
     ).map(([_, id]) => id);
 
     const achievements = Array.from(
-        submission.value.matchAll("https://retroachievements.org/achievement/([0-9]+)")
+        submission.value.matchAll("https://(?:www.)?retroachievements.org/achievement/([0-9]+)")
     ).map(([_, id]) => id);
 
-    const output = document.getElementById("output");
-    output.style.display = "block";
-    submission.style.display = "none";
+    switchToTab("output");
     username.disabled = true;
     date.disabled = true;
 
@@ -95,42 +96,75 @@ document.getElementById("verify").addEventListener("click", async () => {
         </div>`).join("")}
     `;
 
-    for (const elem of output.querySelectorAll(".game")) {
+    const render = async (elem, func) => {
         const id = elem.querySelector(".title").textContent;
-        const {status, title, icon, timestamp} = await checkGame(auth, username.value, id, date.valueAsDate);
-
+        const obj = await func(auth, username.value, id, date.valueAsDate);
         const statusElem = elem.querySelector(".status")
-        statusElem.classList.add(...status.split(" "));
-        statusElem.textContent = status.includes("success") ? "✓" : "X";
+        statusElem.classList.add(...obj.status.split(" "));
+        statusElem.textContent = obj.status.includes("success") ? "✓" : "X";
 
         const img = document.createElement("img");
-        img.src = `https://media.retroachievements.org${icon}`;
+        img.src = `https://media.retroachievements.org${obj.icon}`;
         elem.querySelector(".icon").appendChild(img);
 
-        elem.querySelector(".title").textContent = title;
-        elem.querySelector(".timestamp").textContent = timestamp;
+        elem.querySelector(".title").textContent = obj.title;
+        elem.querySelector(".timestamp").textContent = obj.timestamp;
+    };
 
-        await sleep(500);
+    const sleepTime = 500;
+
+    for (const elem of output.querySelectorAll(".game")) {
+        render(elem, checkGame);
+        await sleep(sleepTime);
     }
 
     for (const elem of output.querySelectorAll(".achievement")) {
-        const id = elem.querySelector(".title").textContent;
-        const {status, title, icon, timestamp} = await checkAchievement(auth, username.value, id, date.valueAsDate);
-
-        const statusElem = elem.querySelector(".status")
-        statusElem.classList.add(status);
-        statusElem.textContent = status == "success" ? "✓" : "X";
-
-        const img = document.createElement("img");
-        img.src = `https://media.retroachievements.org${icon}`;
-        elem.querySelector(".icon").appendChild(img);
-
-        elem.querySelector(".title").textContent = title;
-        elem.querySelector(".timestamp").textContent = timestamp;
-
-        await sleep(500);
+        render(elem, checkAchievement);
+        await sleep(sleepTime);
     }
 });
+
+document.getElementById("clear").addEventListener("click", () => {
+    document.getElementById("username").value = "";
+    document.getElementById("submission").value = "";
+    document.getElementById("output").innerHTML = "";
+    switchToTab("submission");
+});
+
+document.getElementById("optionResetAuth").addEventListener("click", () => {
+    localStorage.removeItem("auth");
+});
+
+document.getElementById("optionCheckDate").addEventListener("change", ev => {
+    const datePicker = document.getElementById("startdate");
+    if (ev.target.checked) {
+        datePicker.disabled = false;
+        resetDatePicker();
+    } else {
+        datePicker.disabled = true;
+        datePicker.valueAsDate = new Date(0);
+    }
+});
+
+for (const elem of document.querySelectorAll("#tabs > div")) {
+    const target = elem.dataset.target;
+    elem.addEventListener("mousedown", () => {
+        switchToTab(target);
+    });
+}
+
+function switchToTab(name) {
+    document.getElementById(name).style.display = "block";
+    for (const elem of document.querySelectorAll(`#content > :not(#${name})`)) {
+        elem.style.display = "none";
+    }
+    for (const elem of document.querySelectorAll("#tabs > div")) {
+        elem.classList.remove("selected");
+        if (elem.dataset.target == name) {
+            elem.classList.add("selected");
+        }
+    }
+}
 
 async function checkGame(auth, username, id, date) {
     const url = `https://retroachievements.org/API/API_GetGameInfoAndUserProgress.php?${auth}&u=${username}&g=${id}&a=1`;
