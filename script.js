@@ -101,7 +101,8 @@ document.getElementById("verify").addEventListener("click", async () => {
         const obj = await func(auth, username.value, id, date.valueAsDate);
         const statusElem = elem.querySelector(".status")
         statusElem.classList.add(...obj.status.split(" "));
-        statusElem.textContent = obj.status.includes("success") ? "✓" : "X";
+        statusElem.textContent = obj.status.includes("success") ?
+            obj.status.includes("alt") ? "A" : "✓" : "X";
 
         const img = document.createElement("img");
         img.src = `https://media.retroachievements.org${obj.icon}`;
@@ -193,6 +194,14 @@ async function checkGame(auth, username, id, date) {
     }
 
     const timestamp = result.HighestAwardDate ? awardDate.toLocaleDateString() : "";
+
+    if (status == "failure") {
+        const altResult = await checkGame(auth, document.getElementById("altUsername").value, id, date);
+        if (altResult.status.includes("success")) {
+            altResult.status += " alt";
+            return altResult;
+        }
+    }
 
     return {
         status,
