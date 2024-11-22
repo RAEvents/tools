@@ -195,8 +195,9 @@ async function checkGame(auth, username, id, date) {
 
     const timestamp = result.HighestAwardDate ? awardDate.toLocaleDateString() : "";
 
-    if (status == "failure") {
-        const altResult = await checkGame(auth, document.getElementById("altUsername").value, id, date);
+    const alt = document.getElementById("altUsername").value;
+    if (status == "failure" && alt.length) {
+        const altResult = await checkGame(auth, alt, id, date);
         if (altResult.status.includes("success")) {
             altResult.status += " alt";
             return altResult;
