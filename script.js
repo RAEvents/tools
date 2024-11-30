@@ -212,48 +212,16 @@ async function checkGame(auth, username, id, date) {
     }
 }
 
-async function getAchievementInfo(auth, id) {
-    const info = await fetch(`https://retroachievements.org/API/API_GetAchievementUnlocks.php?${auth}&a=${id}&c=0`).then(a => a.json());
-    const gameInfo = await fetch(`https://retroachievements.org/API/API_GetGameExtended.php?${auth}&i=${info.Game.ID}`).then(a => a.json());
+async function checkAchievement(auth, username, id, date) {
+    const info = await fetch(`https://retroachievements.org/API/API_GetAchievementUnlocks.php?${auth}&a=${id}&c=1`).then(a => a.json());
+    const game = await fetch(`https://retroachievements.org/API/API_GetGameInfoAndUserProgress.php?${auth}&u=${username}&g=${info.Game.ID}&a=0`).then(a => a.json());
+    const achievement = game.Achievements[info.Achievement.ID];
+    const unlockDate = "DateEarnedHardcore" in achievement ? new Date(achievement.DateEarnedHardcore) : null;
 
     return {
+        status: unlockDate > date ? "success" : "failure",
         title: info.Achievement.Title,
-        icon: `/Badge/${gameInfo.Achievements[id].BadgeName}.png`,
-    }
-}
-
-async function checkAchievement(auth, username, id, date) {
-    const achievementInfo = await getAchievementInfo(auth, id);
-    const count = 300;
-    const url = `https://retroachievements.org/API/API_GetAchievementUnlocks.php?${auth}&a=${id}&c=${count}`;
-
-    let result = null;
-    loop: for (let o = 0;; o += count) {
-        const unlocks = await fetch(`${url}&o=${o}`).then(a => a.json());
-        for (let unlock of unlocks.Unlocks) {
-            if (unlock.User == username && unlock.HardcoreMode) {
-                result = unlock;
-                break loop;
-            }
-        }
-        if (o + count > unlocks.UnlocksCount) break;
-        await sleep(1000);
-    }
-
-    if (result) {
-        const unlockDate = new Date(result.DateAwarded);
-        return {
-            status: unlockDate < date ? "failure" : "success",
-            title: achievementInfo.title,
-            icon: achievementInfo.icon,
-            timestamp: unlockDate.toLocaleDateString(),
-        }
-    } else {
-        return {
-            status: "failure",
-            title: achievementInfo.title,
-            icon: achievementInfo.icon,
-            timestamp: "",
-        }
+        icon: `/Badge/${achievement.BadgeName}.png`,
+        timestamp: unlockDate ? unlockDate.toLocaleDateString() : "N/A",
     }
 }
