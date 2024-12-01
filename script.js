@@ -57,6 +57,7 @@ function showAuthModal() {
 document.getElementById("verify").addEventListener("click", async () => {
     const auth = await getAuthorization();
     const username = document.getElementById("username");
+    const altUsername = document.getElementById("altUsername");
     const submission = document.getElementById("submission");
     const date = document.getElementById("startdate");
 
@@ -76,6 +77,7 @@ document.getElementById("verify").addEventListener("click", async () => {
 
     switchToTab("output");
     username.disabled = true;
+    altUsername.disabled = true;
     date.disabled = true;
 
     output.innerHTML = `
@@ -124,8 +126,9 @@ document.getElementById("verify").addEventListener("click", async () => {
         await sleep(sleepTime);
     }
 
-    document.getElementById("username").disabled = false;
-    document.getElementById("startdate").disabled = false;
+    username.disabled = false;
+    altUsername.disabled = false;
+    date.disabled = false;
 });
 
 document.getElementById("clear").addEventListener("click", () => {
@@ -196,7 +199,7 @@ async function checkGame(auth, username, id, date) {
     const timestamp = result.HighestAwardDate ? awardDate.toLocaleDateString() : "";
 
     const alt = document.getElementById("altUsername").value;
-    if (status == "failure" && alt.length) {
+    if (username != alt && alt.length && status == "failure") {
         const altResult = await checkGame(auth, alt, id, date);
         if (altResult.status.includes("success")) {
             altResult.status += " alt";
