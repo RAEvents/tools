@@ -1,3 +1,7 @@
+if ("DEBUG" in window && window.DEBUG) {
+    new EventSource("/esbuild").addEventListener("change", () => window.location.reload());
+}
+
 const sleep = ms => new Promise(resolve => setTimeout(() => resolve(), ms));
 
 let params = new URL(window.location).searchParams;
