@@ -1,8 +1,15 @@
-if ("DEBUG" in window && window.DEBUG) {
-    new EventSource("/esbuild").addEventListener("change", () => window.location.reload());
-}
-
 const sleep = ms => new Promise(resolve => setTimeout(() => resolve(), ms));
+
+function html(literals, ...expr) {
+    let string = "";
+
+    for (const [index, literal] of literals.entries()) {
+        string += literal;
+        if (index in expr) string += expr[index];
+    }
+
+    return string;
+}
 
 let params = new URL(window.location).searchParams;
 if (params.has("data")) {
@@ -84,9 +91,9 @@ document.getElementById("verify").addEventListener("click", async () => {
     altUsername.disabled = true;
     date.disabled = true;
 
-    output.innerHTML = `
+    output.innerHTML = html`
         <h1>Games</h1><hr />
-        ${games.map(id => `<div class="game">
+        ${games.map(id => html`<div class="game">
             <div class="icon"></div>
             <a class="title" href="https://retroachievements.org/game/${id}">${id}</a>
             <span class="timestamp"></span>
@@ -94,7 +101,7 @@ document.getElementById("verify").addEventListener("click", async () => {
         </div>`).join("")}
 
         <h1>Achievements</h1><hr />
-        ${achievements.map(id => `<div class="achievement">
+        ${achievements.map(id => html`<div class="achievement">
             <div class="icon"></div>
             <a class="title" href="https://retroachievements.org/achievement/${id}">${id}</a>
             <span class="timestamp"></span>
