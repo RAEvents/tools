@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@retroachievements/api':
-        specifier: ^2.1.0
-        version: 2.1.0
+        specifier: github:monkey-bug/retroachievements-api-js
+        version: https://codeload.github.com/monkey-bug/retroachievements-api-js/tar.gz/fe64c4368e97c8d95fd5ef38980b8bd3266abc1b
     devDependencies:
       esbuild:
         specifier: ^0.24.0
@@ -187,8 +187,9 @@ packages:
   '@jridgewell/trace-mapping@0.3.25':
     resolution: {integrity: sha512-vNk6aEwybGtawWmy/PzwnGDOjCkLWSD2wqvjGGAgOAwCGWySYXfYoxt00IJkTF+8Lb57DwOb3Aa0o9CApepiYQ==}
 
-  '@retroachievements/api@2.1.0':
-    resolution: {integrity: sha512-GBzguVYFgHLladX+nMv1X3nTT8Pknd4/QagNpKjgolEInrGtVECwE6JIIWgL/r4m5NuRx/k1KYZGkpdS02oY6A==}
+  '@retroachievements/api@https://codeload.github.com/monkey-bug/retroachievements-api-js/tar.gz/fe64c4368e97c8d95fd5ef38980b8bd3266abc1b':
+    resolution: {tarball: https://codeload.github.com/monkey-bug/retroachievements-api-js/tar.gz/fe64c4368e97c8d95fd5ef38980b8bd3266abc1b}
+    version: 2.1.0
     engines: {node: '>=16'}
 
   '@types/estree@0.0.45':
@@ -312,7 +313,7 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.0
 
-  '@retroachievements/api@2.1.0': {}
+  '@retroachievements/api@https://codeload.github.com/monkey-bug/retroachievements-api-js/tar.gz/fe64c4368e97c8d95fd5ef38980b8bd3266abc1b': {}
 
   '@types/estree@0.0.45':
     optional: true

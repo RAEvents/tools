@@ -11,7 +11,7 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "@retroachievements/api": "^2.1.0"
+        "@retroachievements/api": "github:monkey-bug/retroachievements-api-js"
     },
     "devDependencies": {
         "esbuild": "^0.24.0",

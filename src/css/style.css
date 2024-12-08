@@ -1,5 +1,5 @@
 * {
-    font-family: "monospace";
+    font-family: monospace;
     box-sizing: border-box;
     margin: 0;
 }
@@ -91,7 +91,7 @@ div:has(#username) {
 }
 
 #options {
-    display: flex; 
+    display: flex;
     flex-direction: column-reverse;
     gap: 1rem;
 }

@@ -1,3 +1,6 @@
+import { buildAuthorization } from "@retroachievements/api";
+import "./css/style.css";
+
 const sleep = ms => new Promise(resolve => setTimeout(() => resolve(), ms));
 
 function html(literals, ...expr) {
@@ -33,10 +36,7 @@ async function getAuthorization() {
         return await showAuthModal();
     } else {
         const obj = JSON.parse(localStorage.getItem("auth"));
-        obj.toString = function() {
-            return `z=${this.username}&y=${this.apikey}`;
-        }
-        return obj;
+        return buildAuthorization(obj);
     }
 }
 
@@ -51,16 +51,13 @@ function showAuthModal() {
             let modal = document.querySelector("div.authModal");
             let auth = {
                 username: modal.querySelector("input[name='username']").value,
-                apikey: modal.querySelector("input[name='apikey']").value,
-                toString: function() {
-                    return `z=${this.username}&y=${this.apikey}`;
-                },
+                webApiKey: modal.querySelector("input[name='apikey']").value,
             };
             if (modal.querySelector("input[name='saveinfo']").checked) {
                 localStorage.setItem("auth", JSON.stringify(auth));
             }
             document.body.removeChild(modal);
-            resolve(auth);
+            resolve(buildAuthorization(auth));
         });
     });
 }
