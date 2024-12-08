@@ -137,7 +137,7 @@ document.getElementById("verify").addEventListener("click", async () => {
         elem.querySelector(".timestamp").textContent = obj.timestamp;
     };
 
-    const sleepTime = 1000;
+    const sleepTime = 500;
 
     for (const elem of output.querySelectorAll(".game")) {
         await render(elem, checkGame);
@@ -164,6 +164,16 @@ document.getElementById("clear").addEventListener("click", () => {
     switchToTab("submission");
 });
 
+function setOption(key, value) {
+    const options = JSON.parse(localStorage.getItem("options"));
+    options[key] = value;
+    localStorage.setItem("options", JSON.stringify(options));
+}
+
+function getOption(key) {
+    return JSON.parse(localStorage.getItem("options"))[key];
+}
+
 document.getElementById("optionResetAuth").addEventListener("click", () => {
     localStorage.removeItem("auth");
 });
@@ -178,6 +188,38 @@ document.getElementById("optionCheckDate").addEventListener("change", ev => {
         datePicker.valueAsDate = new Date(0);
     }
 });
+
+document.getElementById("optionDateFormat").addEventListener("change", ev => {
+    setOption("dateFormat", ev.target.selectedIndex);
+});
+
+if (!localStorage.getItem("options")) {
+    localStorage.setItem("options", JSON.stringify({
+        dateFormat: 0,
+    }));
+} else {
+    const options = JSON.parse(localStorage.getItem("options"));
+    document.getElementById("optionDateFormat").selectedIndex = options.dateFormat;
+}
+
+function formatDate(date) {
+    const year = date.getUTCFullYear();
+    const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+    const day = String(date.getUTCDay() + 1).padStart(2, "0");
+
+    switch (getOption("dateFormat")) {
+        case 0:
+            return `${year}-${month}-${day}`;
+        case 1:
+            return `${month}/${day}/${year}`;
+        case 2:
+            return `${day}/${month}/${year}`;
+        case 3:
+            return `${month}-${day}-${year}`;
+        case 4:
+            return `${day}-${month}-${year}`;
+    }
+}
 
 for (const elem of document.querySelectorAll("#tabs > div")) {
     const target = elem.dataset.target;
@@ -220,7 +262,7 @@ async function checkGame(auth, username, id, startDate, endDate) {
         status = "failure";
     }
 
-    const timestamp = result.HighestAwardDate ? awardDate.toLocaleDateString() : "";
+    const timestamp = result.HighestAwardDate ? formatDate(awardDate) : "N/A";
 
     const alt = document.getElementById("altUsername").value;
     if (username != alt && alt.length && status == "failure") {
@@ -248,7 +290,7 @@ async function checkAchievement(auth, username, id, startDate, endDate) {
 
     const result = {
         status: unlocked && (unlockedDate >= startDate && unlockedDate <= endDate) ? "success" : "failure",
-        timestamp: unlocked ? unlockedDate.toLocaleDateString() : "N/A",
+        timestamp: unlocked ? formatDate(unlockedDate) : "N/A",
         title: info.Achievement.Title,
         icon: `/Badge/${achievement.BadgeName}.png`,
     }
