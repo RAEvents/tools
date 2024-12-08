@@ -28,6 +28,7 @@ function resetDatePicker() {
         now.getUTCMonth(),
         1
     );
+    document.getElementById("enddate").valueAsDate = now;
 }
 resetDatePicker();
 
@@ -76,11 +77,12 @@ document.getElementById("verify").addEventListener("click", async () => {
     const username = document.getElementById("username");
     const altUsername = document.getElementById("altUsername");
     const submission = document.getElementById("submission");
-    const date = document.getElementById("startdate");
+    const startDate = document.getElementById("startdate");
+    const endDate = document.getElementById("enddate");
 
-    if (date.value == "") {
-        date.style.backgroundColor = "red";
-        date.addEventListener("focus", () => date.style.backgroundColor = "revert", { once: true });
+    if (startDate.value == "") {
+        startDate.style.backgroundColor = "red";
+        startDate.addEventListener("focus", () => startDate.style.backgroundColor = "revert", { once: true });
         return;
     }
 
@@ -95,7 +97,8 @@ document.getElementById("verify").addEventListener("click", async () => {
     switchToTab("output");
     username.disabled = true;
     altUsername.disabled = true;
-    date.disabled = true;
+    startDate.disabled = true;
+    endDate.disabled = true;
 
     output.innerHTML = html`
         <h1>Games</h1><hr />
@@ -117,7 +120,10 @@ document.getElementById("verify").addEventListener("click", async () => {
 
     const render = async (elem, func) => {
         const id = elem.querySelector(".title").textContent;
-        const obj = await func(auth, username.value, id, date.valueAsDate);
+        // add one day to end date to account for it being unlocked during that day
+        const end = endDate.valueAsDate;
+        end.setDate(end.getDate() + 1);
+        const obj = await func(auth, username.value, id, startDate.valueAsDate, end);
         const statusElem = elem.querySelector(".status")
         statusElem.classList.add(...obj.status.split(" "));
         statusElem.textContent = obj.status.includes("success") ?
@@ -145,7 +151,8 @@ document.getElementById("verify").addEventListener("click", async () => {
 
     username.disabled = false;
     altUsername.disabled = false;
-    date.disabled = false;
+    startDate.disabled = false;
+    endDate.disabled = false;
 });
 
 document.getElementById("clear").addEventListener("click", () => {
@@ -192,7 +199,7 @@ function switchToTab(name) {
     }
 }
 
-async function checkGame(auth, username, id, date) {
+async function checkGame(auth, username, id, startDate, endDate) {
     const url = `https://retroachievements.org/API/API_GetGameInfoAndUserProgress.php?${auth}&u=${username}&g=${id}&a=1`;
     const result = await fetch(url).then(a => a.json());
 
@@ -209,7 +216,7 @@ async function checkGame(auth, username, id, date) {
     }
 
     const awardDate = new Date(result.HighestAwardDate);
-    if (awardDate < date) {
+    if (awardDate < startDate || awardDate > endDate) {
         status = "failure";
     }
 
@@ -217,7 +224,7 @@ async function checkGame(auth, username, id, date) {
 
     const alt = document.getElementById("altUsername").value;
     if (username != alt && alt.length && status == "failure") {
-        const altResult = await checkGame(auth, alt, id, date);
+        const altResult = await checkGame(auth, alt, id, startDate);
         if (altResult.status.includes("success")) {
             altResult.status += " alt";
             return altResult;
@@ -232,7 +239,7 @@ async function checkGame(auth, username, id, date) {
     }
 }
 
-async function checkAchievement(auth, username, id, date) {
+async function checkAchievement(auth, username, id, startDate, endDate) {
     const info = await fetch(`https://retroachievements.org/API/API_GetAchievementUnlocks.php?${auth}&a=${id}&c=1`).then(a => a.json());
     const game = await fetch(`https://retroachievements.org/API/API_GetGameInfoAndUserProgress.php?${auth}&u=${username}&g=${info.Game.ID}&a=0`).then(a => a.json());
     const achievement = game.Achievements[info.Achievement.ID];
@@ -240,16 +247,16 @@ async function checkAchievement(auth, username, id, date) {
     const unlockedDate = unlocked ? new Date(achievement.DateEarnedHardcore) : new Date(0);
 
     const result = {
-        status: unlocked && unlockedDate >= date ? "success" : "failure",
+        status: unlocked && (unlockedDate >= startDate && unlockedDate <= endDate) ? "success" : "failure",
         timestamp: unlocked ? unlockedDate.toLocaleDateString() : "N/A",
         title: info.Achievement.Title,
         icon: `/Badge/${achievement.BadgeName}.png`,
     }
 
-    if (!unlocked || unlockedDate < date) {
+    if (result.status == "failure") {
         const alt = document.getElementById("altUsername").value;
         if (alt.length && alt != username) {
-            const altResult = await checkAchievement(auth, alt, id, date);
+            const altResult = await checkAchievement(auth, alt, id, startDate, endDate);
             if (altResult.status == "success") {
                 altResult.status += " alt";
                 return altResult;

@@ -50,12 +50,12 @@ main label, div.authModal label {
     text-align: center;
 }
 
-div:has(#username) {
+div:has(#username), div:has(#startdate) {
     display: flex;
     gap: 1rem;
 }
 
-#username, #altUsername {
+#username, #altUsername, #startdate, #enddate {
     flex: 1;
 }
 
