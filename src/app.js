@@ -36,7 +36,14 @@ async function getAuthorization() {
         return await showAuthModal();
     } else {
         const obj = JSON.parse(localStorage.getItem("auth"));
-        return buildAuthorization(obj);
+        if (obj.apikey) {
+            // Backwards compatibility with old auth object
+            obj.webApiKey = obj.apikey
+        }
+        obj.toString = function() {
+            return `z=${this.username}&y=${this.webApiKey}`;
+        }
+        return obj;
     }
 }
 
