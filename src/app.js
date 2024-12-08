@@ -36,7 +36,16 @@ async function getAuthorization() {
         return await showAuthModal();
     } else {
         const obj = JSON.parse(localStorage.getItem("auth"));
-        return buildAuthorization(obj);
+        if ("apikey" in obj) {
+            obj.webApiKey = obj.apikey;
+            delete obj.apikey;
+            localStorage.setItem("auth", JSON.stringify(obj));
+        }
+        const auth = buildAuthorization(obj);
+        auth.toString = function() {
+            return `z=${this.username}&y=${this.webApiKey}`;
+        }
+        return auth;
     }
 }
 
@@ -227,12 +236,26 @@ async function checkAchievement(auth, username, id, date) {
     const info = await fetch(`https://retroachievements.org/API/API_GetAchievementUnlocks.php?${auth}&a=${id}&c=1`).then(a => a.json());
     const game = await fetch(`https://retroachievements.org/API/API_GetGameInfoAndUserProgress.php?${auth}&u=${username}&g=${info.Game.ID}&a=0`).then(a => a.json());
     const achievement = game.Achievements[info.Achievement.ID];
-    const unlockDate = "DateEarnedHardcore" in achievement ? new Date(achievement.DateEarnedHardcore) : null;
+    const unlocked = "DateEarnedHardcore" in achievement;
+    const unlockedDate = unlocked ? new Date(achievement.DateEarnedHardcore) : new Date(0);
 
-    return {
-        status: unlockDate > date ? "success" : "failure",
+    const result = {
+        status: unlocked && unlockedDate >= date ? "success" : "failure",
+        timestamp: unlocked ? unlockedDate.toLocaleDateString() : "N/A",
         title: info.Achievement.Title,
         icon: `/Badge/${achievement.BadgeName}.png`,
-        timestamp: unlockDate ? unlockDate.toLocaleDateString() : "N/A",
     }
+
+    if (!unlocked || unlockedDate < date) {
+        const alt = document.getElementById("altUsername").value;
+        if (alt.length && alt != username) {
+            const altResult = await checkAchievement(auth, alt, id, date);
+            if (altResult.status == "success") {
+                altResult.status += " alt";
+                return altResult;
+            }
+        }
+    }
+
+    return result;
 }

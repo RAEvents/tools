@@ -22,10 +22,8 @@ async function dev() {
 
     let { host, port } = await ctx.serve({
         servedir: dir,
-        onRequest: (req) => console.log(
-            `[${req.method}] ${req.path} status: ${req.status}`
-        ),
-    })
+        onRequest: r => console.log(`${r.method} ${r.path} ${r.status}`),
+    });
     console.log(`Serving at ${host}:${port}`);
 }
 
