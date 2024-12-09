@@ -16,6 +16,7 @@ async function dev() {
         outdir: dir,
         bundle: true,
         sourcemap: true,
+        format: "esm",
     });
 
     await ctx.watch();
@@ -36,6 +37,7 @@ async function prod() {
         minify: true,
         sourcemap: true,
         write: false,
+        format: "esm",
     });
 }
 

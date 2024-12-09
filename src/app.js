@@ -1,4 +1,5 @@
 import { buildAuthorization } from "@retroachievements/api";
+import { compress, decompress } from "./compression.js";
 import "./css/style.css";
 
 const sleep = ms => new Promise(resolve => setTimeout(() => resolve(), ms));
@@ -27,7 +28,7 @@ resetDatePicker();
 
 let params = new URL(window.location).searchParams;
 if (params.has("data")) {
-    const data = JSON.parse(window.atob(params.get("data")));
+    const data = await decompress(params.get("data"));
     const startDate = document.getElementById("startdate").value;
     const endDate = document.getElementById("enddate").value;
 
@@ -185,7 +186,7 @@ document.getElementById("optionResetAuth").addEventListener("click", () => {
     localStorage.removeItem("auth");
 });
 
-document.getElementById("optionExportURL").addEventListener("click", () => {
+document.getElementById("optionExportURL").addEventListener("click", async () => {
     const username = document.getElementById("username").value;
     const alt = document.getElementById("altUsername").value;
     const startDate = document.getElementById("startdate").value;
@@ -193,9 +194,9 @@ document.getElementById("optionExportURL").addEventListener("click", () => {
     const submission = document.getElementById("submission").value;
     const optionCheckDate = document.getElementById("optionCheckDate").checked;
 
-    const data = window.btoa(JSON.stringify({
+    const data = await compress({
         username, alt, startDate, endDate, submission, optionCheckDate
-    }));
+    });
 
     const url = new URL(window.location.href);
     url.searchParams.set("data", data);
