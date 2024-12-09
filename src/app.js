@@ -14,13 +14,6 @@ function html(literals, ...expr) {
     return string;
 }
 
-let params = new URL(window.location).searchParams;
-if (params.has("data")) {
-    const data = JSON.parse(window.atob(params.get("data")));
-    document.getElementById("username").value = data.username;
-    document.getElementById("submission").value = data.links;
-}
-
 function resetDatePicker() {
     let now = new Date();
     document.getElementById("startdate").valueAsDate = new Date(
@@ -31,6 +24,20 @@ function resetDatePicker() {
     document.getElementById("enddate").valueAsDate = now;
 }
 resetDatePicker();
+
+let params = new URL(window.location).searchParams;
+if (params.has("data")) {
+    const data = JSON.parse(window.atob(params.get("data")));
+    const startDate = document.getElementById("startdate").value;
+    const endDate = document.getElementById("enddate").value;
+
+    document.getElementById("username").value = data.username ?? "";
+    document.getElementById("altUsername").value = data.alt ?? "";
+    document.getElementById("startdate").value = data.startDate ?? startDate;
+    document.getElementById("enddate").value = data.endDate ?? endDate;
+    document.getElementById("submission").value = data.submission ?? "";
+    document.getElementById("optionCheckDate").checked = data.optionCheckDate ?? true;
+}
 
 async function getAuthorization() {
     if (!localStorage.getItem("auth")) {
@@ -176,6 +183,23 @@ function getOption(key) {
 
 document.getElementById("optionResetAuth").addEventListener("click", () => {
     localStorage.removeItem("auth");
+});
+
+document.getElementById("optionExportURL").addEventListener("click", () => {
+    const username = document.getElementById("username").value;
+    const alt = document.getElementById("altUsername").value;
+    const startDate = document.getElementById("startdate").value;
+    const endDate = document.getElementById("enddate").value;
+    const submission = document.getElementById("submission").value;
+    const optionCheckDate = document.getElementById("optionCheckDate").checked;
+
+    const data = window.btoa(JSON.stringify({
+        username, alt, startDate, endDate, submission, optionCheckDate
+    }));
+
+    const url = new URL(window.location.href);
+    url.searchParams.set("data", data);
+    window.location.href = url.href;
 });
 
 document.getElementById("optionCheckDate").addEventListener("change", ev => {
