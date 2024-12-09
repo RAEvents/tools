@@ -18,6 +18,7 @@ body {
 
 main {
     display: grid;
+    grid-template: auto / repeat(2, 1fr 2fr);
     gap: 1rem;
     box-shadow: 4px 4px 16px black;
 }
@@ -31,7 +32,7 @@ main, div.authModal > div {
 #content {
     height: 40em;
     width: 50em;
-    grid-column: 2;
+    grid-column: 2 / span 3;
     grid-row: span 2;
     z-index: 1;
     font-size: 1rem;
@@ -50,15 +51,6 @@ main label, div.authModal label {
     text-align: center;
 }
 
-div:has(#username), div:has(#startdate) {
-    display: flex;
-    gap: 1rem;
-}
-
-#username, #altUsername, #startdate, #enddate {
-    flex: 1;
-}
-
 #options label {
     font-size: 1rem;
 }
@@ -69,6 +61,7 @@ div:has(#username), div:has(#startdate) {
     padding-top: 0.5em;
     margin-right: calc(-1rem - 2px);
     z-index: 0;
+    grid-column: 1;
 }
 
 #tabs > div {
@@ -101,7 +94,7 @@ button#clear {
 }
 
 button#verify {
-    grid-column: 2;
+    grid-column: 2 / span 3;
 }
 
 #output {
