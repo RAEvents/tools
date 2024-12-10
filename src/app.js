@@ -235,7 +235,7 @@ if (!localStorage.getItem("options")) {
 function formatDate(date) {
     const year = date.getUTCFullYear();
     const month = String(date.getUTCMonth() + 1).padStart(2, "0");
-    const day = String(date.getUTCDay() + 1).padStart(2, "0");
+    const day = String(date.getUTCDate()).padStart(2, "0");
 
     switch (getOption("dateFormat")) {
         case 0:
