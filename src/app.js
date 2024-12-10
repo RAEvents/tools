@@ -28,7 +28,12 @@ resetDatePicker();
 
 let params = new URL(window.location).searchParams;
 if (params.has("data")) {
-    const data = await decompress(params.get("data"));
+    let data = null;
+    if (params.has("c") && params.get("c") == "0") {
+        data = JSON.parse(atob(params.get("data")));
+    } else {
+        data = await decompress(params.get("data"));
+    }
     const startDate = document.getElementById("startdate").value;
     const endDate = document.getElementById("enddate").value;
 
