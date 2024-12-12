@@ -1,8 +1,8 @@
 import { buildAuthorization } from "@retroachievements/api";
 import { compress, decompress } from "./compression.js";
+import { getOption, setOption } from "./options.js";
+import * as api from "./api.js";
 import "./css/style.css";
-
-const sleep = ms => new Promise(resolve => setTimeout(() => resolve(), ms));
 
 function html(literals, ...expr) {
     let string = "";
@@ -93,6 +93,8 @@ document.getElementById("verify").addEventListener("click", async () => {
     const startDate = document.getElementById("startdate");
     const endDate = document.getElementById("enddate");
 
+    api.resetBackoff();
+
     if (startDate.value == "") {
         startDate.style.backgroundColor = "red";
         startDate.addEventListener("focus", () => startDate.style.backgroundColor = "revert", { once: true });
@@ -150,16 +152,14 @@ document.getElementById("verify").addEventListener("click", async () => {
         elem.querySelector(".timestamp").textContent = obj.timestamp;
     };
 
-    const sleepTime = 500;
-
     for (const elem of output.querySelectorAll(".game")) {
-        await render(elem, checkGame);
-        await sleep(sleepTime);
+        await render(elem, api.checkGame);
+        await api.wait();
     }
 
     for (const elem of output.querySelectorAll(".achievement")) {
-        await render(elem, checkAchievement);
-        await sleep(sleepTime);
+        await render(elem, api.checkAchievement);
+        await api.wait();
     }
 
     username.disabled = false;
@@ -176,16 +176,6 @@ document.getElementById("clear").addEventListener("click", () => {
     document.getElementById("startdate").disabled = false;
     switchToTab("submission");
 });
-
-function setOption(key, value) {
-    const options = JSON.parse(localStorage.getItem("options"));
-    options[key] = value;
-    localStorage.setItem("options", JSON.stringify(options));
-}
-
-function getOption(key) {
-    return JSON.parse(localStorage.getItem("options"))[key];
-}
 
 document.getElementById("optionResetAuth").addEventListener("click", () => {
     localStorage.removeItem("auth");
@@ -232,25 +222,6 @@ if (!localStorage.getItem("options")) {
     document.getElementById("optionDateFormat").selectedIndex = options.dateFormat;
 }
 
-function formatDate(date) {
-    const year = date.getUTCFullYear();
-    const month = String(date.getUTCMonth() + 1).padStart(2, "0");
-    const day = String(date.getUTCDate()).padStart(2, "0");
-
-    switch (getOption("dateFormat")) {
-        case 0:
-            return `${year}-${month}-${day}`;
-        case 1:
-            return `${month}/${day}/${year}`;
-        case 2:
-            return `${day}/${month}/${year}`;
-        case 3:
-            return `${month}-${day}-${year}`;
-        case 4:
-            return `${day}-${month}-${year}`;
-    }
-}
-
 for (const elem of document.querySelectorAll("#tabs > div")) {
     const target = elem.dataset.target;
     elem.addEventListener("mousedown", () => {
@@ -271,70 +242,3 @@ function switchToTab(name) {
     }
 }
 
-async function checkGame(auth, username, id, startDate, endDate) {
-    const url = `https://retroachievements.org/API/API_GetGameInfoAndUserProgress.php?${auth}&u=${username}&g=${id}&a=1`;
-    const result = await fetch(url).then(a => a.json());
-
-    let status = "failure";
-    switch (result.HighestAwardKind) {
-        case "mastered":
-            status = "success mastered";
-            break;
-        case "beaten-hardcore":
-            status = "success";
-            break;
-        default:
-            break;
-    }
-
-    const awardDate = new Date(result.HighestAwardDate);
-    if (awardDate < startDate || awardDate > endDate) {
-        status = "failure";
-    }
-
-    const timestamp = result.HighestAwardDate ? formatDate(awardDate) : "N/A";
-
-    const alt = document.getElementById("altUsername").value;
-    if (username != alt && alt.length && status == "failure") {
-        const altResult = await checkGame(auth, alt, id, startDate);
-        if (altResult.status.includes("success")) {
-            altResult.status += " alt";
-            return altResult;
-        }
-    }
-
-    return {
-        status,
-        title: result.Title,
-        icon: result.ImageIcon,
-        timestamp,
-    }
-}
-
-async function checkAchievement(auth, username, id, startDate, endDate) {
-    const info = await fetch(`https://retroachievements.org/API/API_GetAchievementUnlocks.php?${auth}&a=${id}&c=1`).then(a => a.json());
-    const game = await fetch(`https://retroachievements.org/API/API_GetGameInfoAndUserProgress.php?${auth}&u=${username}&g=${info.Game.ID}&a=0`).then(a => a.json());
-    const achievement = game.Achievements[info.Achievement.ID];
-    const unlocked = "DateEarnedHardcore" in achievement;
-    const unlockedDate = unlocked ? new Date(achievement.DateEarnedHardcore) : new Date(0);
-
-    const result = {
-        status: unlocked && (unlockedDate >= startDate && unlockedDate <= endDate) ? "success" : "failure",
-        timestamp: unlocked ? formatDate(unlockedDate) : "N/A",
-        title: info.Achievement.Title,
-        icon: `/Badge/${achievement.BadgeName}.png`,
-    }
-
-    if (result.status == "failure") {
-        const alt = document.getElementById("altUsername").value;
-        if (alt.length && alt != username) {
-            const altResult = await checkAchievement(auth, alt, id, startDate, endDate);
-            if (altResult.status == "success") {
-                altResult.status += " alt";
-                return altResult;
-            }
-        }
-    }
-
-    return result;
-}
