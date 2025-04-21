@@ -1,44 +1,32 @@
-import { mkdirSync, symlinkSync, existsSync } from "fs";
 import esbuild from "esbuild";
-import { minifyTemplates, writeFiles } from "esbuild-minify-templates";
 
-async function dev() {
-    const dir = "dev";
-    mkdirSync(dir, { recursive: true });
-    process.chdir(dir);
-    if (!existsSync("index.html")) {
-        symlinkSync("../dist/index.html", "index.html", "file");
-    }
-    process.chdir("..");
-
-    let ctx = await esbuild.context({
-        entryPoints: ["src/app.js"],
-        outdir: dir,
-        bundle: true,
-        sourcemap: true,
-        format: "esm",
-    });
-
-    await ctx.watch();
-
-    let { host, port } = await ctx.serve({
-        servedir: dir,
-        onRequest: r => console.log(`${r.method} ${r.path} ${r.status}`),
-    });
-    console.log(`Serving at ${host}:${port}`);
-}
-
-async function prod() {
-    await esbuild.build({
-        plugins: [minifyTemplates({ taggedOnly: true }), writeFiles()],
-        entryPoints: ["src/app.js"],
-        outdir: "dist",
+async function build() {
+    return await esbuild.context({
+        entryPoints: ["src/app.js", "src/index.html"],
+        outdir: "build",
         bundle: true,
         minify: true,
         sourcemap: true,
-        write: false,
         format: "esm",
+        loader: { ".html": "copy" },
     });
 }
 
-await { "dev": dev, "prod": prod }[process.argv[2]]();
+async function serve(ctx) {
+    await ctx.watch();
+
+    let { host, port } = await ctx.serve({
+        servedir: "build",
+        onRequest: r => console.log(`${r.method} ${r.path} ${r.status}`),
+    });
+
+    console.log(`Serving at ${host}:${port}`);
+}
+
+const ctx = await build();
+if (process.argv[2] === "--serve") {
+    await serve(ctx);
+} else {
+    ctx.dispose();
+}
+

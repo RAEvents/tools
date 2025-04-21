@@ -11,6 +11,9 @@ importers:
       '@retroachievements/api':
         specifier: github:monkey-bug/retroachievements-api-js
         version: https://codeload.github.com/monkey-bug/retroachievements-api-js/tar.gz/8ef3152409961a38638e69a9b141074181d1b7b9
+      preact:
+        specifier: ^10.26.5
+        version: 10.26.5
     devDependencies:
       esbuild:
         specifier: ^0.24.0
@@ -217,6 +220,9 @@ packages:
     resolution: {integrity: sha512-Rbiu0QPIxTXgOXwiIpRVJfZRQ2FWyfzYrOGBs9SN5RbaXg1CN5ELn/plodwWwluX93yzc4qO/bNIen1ThGFCxw==}
     engines: {node: '>=10.4.0'}
 
+  preact@10.26.5:
+    resolution: {integrity: sha512-fmpDkgfGU6JYux9teDWLhj9mKN55tyepwYbxHgQuIxbWQzgFg5vk7Mrrtfx7xRxq798ynkY4DDDxZr235Kk+4w==}
+
 snapshots:
 
   '@ampproject/remapping@2.3.0':
@@ -362,3 +368,5 @@ snapshots:
       '@jridgewell/sourcemap-codec': 1.5.0
 
   meriyah@4.5.0: {}
+
+  preact@10.26.5: {}

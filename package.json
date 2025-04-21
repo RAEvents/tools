@@ -4,17 +4,16 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "dev": "node build.mjs dev",
-        "prod": "node build.mjs prod"
+        "build": "node build.mjs"
     },
     "keywords": [],
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "@retroachievements/api": "github:monkey-bug/retroachievements-api-js"
+        "@retroachievements/api": "github:monkey-bug/retroachievements-api-js",
+        "preact": "^10.26.5"
     },
     "devDependencies": {
-        "esbuild": "^0.24.0",
-        "esbuild-minify-templates": "^0.11.0"
+        "esbuild": "^0.24.0"
     }
 }

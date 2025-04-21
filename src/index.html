@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noindex, nofollow">
+        <title>RAEvents Tools</title>
+        <link rel="shortcut icon" type="image/x-icon" href="/static/favicon.ico">
+        <link rel="stylesheet" href="app.css">
+    </head>
+
+    <body>
+        <main>
+            <label for="username">Username:</label>
+            <input id="username" type="text"></input>
+            <label for="startdate">Start Date:</label>
+            <input id="startdate" type="date"></input>
+            <label for="altUsername">Alt:</label>
+            <input id="altUsername" type="text"></input>
+            <label for="enddate">End Date:</label>
+            <input id="enddate" type="date"></input>
+            <div id="tabs">
+                <div id="tabSubmission" class="selected" data-target="submission">Submission</div>
+                <div id="tabOutput" data-target="output">Output</div>
+            </div>
+            <div id="content">
+                <textarea id="submission"></textarea>
+                <div id="output"></div>
+            </div>
+            <div id="options">
+                <button id="optionExportURL">Export to URL</button>
+                <button id="optionResetAuth">Reset Auth</button>
+                <select id="optionDateFormat">
+                    <option>yyyy-mm-dd</option>
+                    <option>mm/dd/yyyy</option>
+                    <option>dd/mm/yyyy</option>
+                    <option>mm-dd-yyyy</option>
+                    <option>dd-mm-yyyy</option>
+                </select>
+                <label>
+                    <input id="optionCheckDate" type="checkbox" checked></input>
+                    Check date
+                </label>
+            </div>
+            <button id="clear">Clear</button>
+            <button id="verify">Verify</button>
+        </main>
+        <template id="authModalTemplate">
+            <div class="authModal">
+                <div>
+                    <label>Username:</label>
+                    <input name="username" type="text"></input>
+                    <label>API Key:</label>
+                    <input name="apikey" type="password"></input>
+                    <label>
+                        <input name="saveinfo" type="checkbox"></input>
+                        Save Info
+                    </label>
+                    <button>Ok</button>
+                </div>
+            </div>
+        </template>
+        <script type="module" src="app.js"></script>
+    </body>
+</html>
