@@ -1,0 +1,46 @@
+.bar {
+    display: flex;
+    margin-bottom: -1px;
+}
+
+.tab {
+    border: 1px solid #777;
+    border-radius: 8px 8px 0 0;
+    padding: 0.25rem 0.5rem;
+    background-color: #bbb;
+}
+
+.tab:not(:first-child) {
+    margin-left: -1px;
+}
+
+.tab.active {
+    background-color: #eee;
+    border-bottom: none;
+    padding-bottom: calc(0.25rem + 1px);
+}
+
+.content {
+    background-color: #eee;
+    border: 1px solid #777;
+    resize: both;
+    overflow: auto;
+    width: 40em;
+    height: 30em;
+    padding: 0.25em;
+}
+
+.content * {
+    border: none;
+    width: 100%;
+    height: 100%;
+    resize: none;
+}
+
+.content > .active {
+    display: block;
+}
+
+.content > :not(.active) {
+    display: none;
+}

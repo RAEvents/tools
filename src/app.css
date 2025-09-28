@@ -1,0 +1,23 @@
+* {
+    font-family: monospace;
+    box-sizing: border-box;
+    margin: 0;
+}
+
+html {
+    font-size: 14px;
+}
+
+body {
+    background-color: #333;
+    display: grid;
+    place-items: center;
+    height: 100dvh;
+}
+
+main {
+    background-color: #ddd;
+    border-radius: 6px;
+    padding: 1rem;
+    box-shadow: 4px 4px 16px black;
+}

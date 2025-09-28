@@ -1,0 +1,42 @@
+.main {
+    display: grid;
+    grid-template: 1fr 2.5em / 15em 1fr;
+    gap: 0.5em;
+}
+
+.sidebar {
+    grid-row-end: span 2;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+    margin-right: 0.5em;
+}
+
+.sidebar > label > input {
+    width: 100%;
+}
+
+.tabarea {
+    grid-column-start: 2;
+}
+
+.buttons {
+    display: flex;
+    gap: 0.5em;
+    grid-column-start: 2;
+}
+
+.buttons > * {
+    padding: 0.5em;
+}
+
+.buttons > *:not(:first-child) {
+    flex: 1;
+}
+
+.submission {
+}
+
+.output {
+}
+
