@@ -2,7 +2,7 @@ import { buildAuthorization } from "@retroachievements/api";
 import { useRef } from "preact/hooks";
 import { useSignal } from "@preact/signals";
 import { TabArea } from "../components/tabarea.jsx";
-import * as css from "./checker.module.css";
+import * as css from "./verify.module.css";
 
 function SubmissionPane({ text }) {
     return (
@@ -20,7 +20,7 @@ function OutputPane({ data }) {
     )
 }
 
-export function Checker() {
+export function Verify() {
     const submission = useSignal("");
     const data = useSignal({});
     const tabArea = useRef(null);

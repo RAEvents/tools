@@ -1,7 +1,6 @@
 import { createElement } from "preact";
 import { useRef } from "preact/hooks";
 import * as css from "./menu.module.css";
-import listsvg from "./svg/list.svg";
 
 // https://github.com/twbs/bootstrap/blob/main/LICENSE
 const icons = {
@@ -19,10 +18,11 @@ function MenuButton(props) {
 
 export function MenuItems() {
     return <nav class={css.items}>
-        <a href="google.com">checker</a>
-        <a href="google.com">gamblers</a>
-        <a href="google.com">evergreen</a>
-        <a href="google.com" aria-label="config">{icons.gear}</a>
+        <a href="/tools/verify">verify</a>
+        <a href="/tools/gamblers">gamblers</a>
+        <a href="/tools/evergreen">evergreen</a>
+        <a href="/tools/untracked">untracked</a>
+        <a href="/tools/settings" aria-label="settings">{icons.gear}</a>
     </nav>;
 }
 

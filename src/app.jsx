@@ -1,13 +1,13 @@
 import { render } from "preact";
 import "./app.css";
 
-import { Checker } from "./tools/checker.jsx";
+import { Verify } from "./tools/verify.jsx";
 import { Menu } from "./menu.jsx";
 
 function App() {
 	return <main>
         <Menu />
-        <Checker />
+        <Verify />
     </main>;
 }
 
