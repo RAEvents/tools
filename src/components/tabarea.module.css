@@ -24,10 +24,10 @@
     background-color: #eee;
     border: 1px solid #777;
     resize: both;
-    overflow: auto;
+    overflow: hidden;
     width: 40em;
     height: 30em;
-    padding: 0.25em;
+    padding: 0.25rem;
 }
 
 .content * {

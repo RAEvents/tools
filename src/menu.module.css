@@ -1,0 +1,94 @@
+.container {
+    width: 10rem;
+    height: 100%;
+    left: -10rem;
+    top: 0;
+    color: white;
+    padding: 0.5rem;
+    transition: left 0.5s ease;
+    overflow: hidden;
+}
+
+.container, .items, .openclose, .openclose * {
+    position: absolute;
+}
+
+.container, .items {
+    display: flex;
+    flex-direction: column;
+    align-items: end;
+}
+
+.container .items, .openbutton, .closebutton {
+    transition: right 0.25s ease;
+    margin-right: 1em;
+}
+
+.container .items {
+    top: 4em;
+    right: -100%;
+    gap: 0.5em;
+}
+
+.container.open .items {
+    right: 0;
+}
+
+.openclose {
+    left: 0;
+    width: 100%;
+}
+
+.openclose *:nth-child(1) {
+    right: 0;
+}
+
+.container.open .openclose *:nth-child(1) {
+    right: -100%;
+}
+
+.openclose *:nth-child(2) {
+    right: -100%;
+}
+
+.container.open .openclose *:nth-child(2) {
+    right: 0;
+}
+
+.items a, .items a:visited {
+    color: white;
+    text-decoration: none;
+}
+
+.items a:hover, .openbutton:hover, .closebutton:hover {
+    text-decoration: underline;
+    filter: drop-shadow(0px 0px 4px white);
+}
+
+.items a svg {
+    width: 24px;
+    height: 24px;
+}
+
+.container .items a:last-child {
+    padding-top: 1.25em;
+}
+
+.openbutton, .closebutton {
+    border: none;
+    background: none;
+    padding: 0;
+}
+
+.openbutton svg {
+    width: 32px;
+    height: 32px;
+    color: white;
+}
+
+.closebutton svg {
+    width: 28px;
+    height: 28px;
+    color: white;
+}
+

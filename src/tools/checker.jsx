@@ -1,7 +1,4 @@
 import { buildAuthorization } from "@retroachievements/api";
-import { compress, decompress } from "../compression.js";
-import { getOption, setOption } from "../options.js";
-import * as api from "../api.js";
 import { useRef } from "preact/hooks";
 import { useSignal } from "@preact/signals";
 import { TabArea } from "../components/tabarea.jsx";
@@ -9,7 +6,11 @@ import * as css from "./checker.module.css";
 
 function SubmissionPane({ text }) {
     return (
-        <textarea onChange={ev => text.value = ev.target.value} value={text} class={css.submission}></textarea>
+        <textarea
+            class={css.submission}
+            onChange={ev => text.value = ev.target.value}
+            value={text}>
+        </textarea>
     )
 }
 
@@ -24,6 +25,11 @@ export function Checker() {
     const data = useSignal({});
     const tabArea = useRef(null);
 
+    const username = useSignal("");
+    const alt = useSignal("");
+    const startDate = useSignal(new Date(0));
+    const endDate = useSignal(new Date(Date.now()));
+
     const clear = () => {
         submission.value = "";
         data.value = {};
@@ -37,24 +43,43 @@ export function Checker() {
         tabArea.current.setActiveTab(1);
     };
 
-    return (<div class={css.main}>
+    return <div class={css.main}>
         <div class={css.sidebar}>
             <label>
                 Username:
-                <input type="text"></input>
+                <input type="text"
+                    name="username"
+                    value={username}
+                    onInput={ev => username.value = ev.currentTarget.value}>
+                </input>
             </label>
-
-            <label for="altUsername">Alt:</label>
-            <input id="altUsername" type="text"></input>
-
-            <label for="startdate">Start Date:</label>
-            <input id="startdate" type="date"></input>
-
-            <label for="enddate">End Date:</label>
-            <input id="enddate" type="date"></input>
+            <label>
+                Alt:
+                <input type="text"
+                    name="alt"
+                    value={alt}
+                    onInput={ev => alt.value = ev.currentTarget.value}>
+                </input>
+            </label>
+            <label>
+                Start Date:
+                <input type="date"
+                    name="startdate"
+                    value={startDate.value.toISOString().slice(0, 10)}
+                    onInput={ev => startDate.value = ev.currentTarget.valueAsDate}>
+                </input>
+            </label>
+            <label>
+                End Date:
+                <input type="date"
+                    name="enddate"
+                    value={endDate.value.toISOString().slice(0, 10)}
+                    onInput={ev => endDate.value = ev.currentTarget.valueAsDate}>
+                </input>
+            </label>
         </div>
 
-        <TabArea ref={tabArea} class={css.tabarea}>
+        <TabArea class={css.tabarea} ref={tabArea}>
             <TabArea.Tab name="Submission">
                 <SubmissionPane text={submission} />
             </TabArea.Tab>
@@ -98,59 +123,59 @@ export function Checker() {
                 </div>
             </div>
         </template>
-    </div>);
+    </div>;
 }
 
 
-function resetDatePicker() {
-    let now = new Date();
-    document.getElementById("startdate").valueAsDate = new Date(
-        now.getUTCFullYear(),
-        now.getUTCMonth(),
-        1
-    );
-    document.getElementById("enddate").valueAsDate = now;
-}
+// function resetDatePicker() {
+//     let now = new Date();
+//     document.getElementById("startdate").valueAsDate = new Date(
+//         now.getUTCFullYear(),
+//         now.getUTCMonth(),
+//         1
+//     );
+//     document.getElementById("enddate").valueAsDate = now;
+// }
 
-async function getAuthorization() {
-    if (!localStorage.getItem("auth")) {
-        return await showAuthModal();
-    } else {
-        const obj = JSON.parse(localStorage.getItem("auth"));
-        if ("apikey" in obj) {
-            obj.webApiKey = obj.apikey;
-            delete obj.apikey;
-            localStorage.setItem("auth", JSON.stringify(obj));
-        }
-        const auth = buildAuthorization(obj);
-        auth.toString = function() {
-            return `z=${this.username}&y=${this.webApiKey}`;
-        }
-        return auth;
-    }
-}
+// async function getAuthorization() {
+//     if (!localStorage.getItem("auth")) {
+//         return await showAuthModal();
+//     } else {
+//         const obj = JSON.parse(localStorage.getItem("auth"));
+//         if ("apikey" in obj) {
+//             obj.webApiKey = obj.apikey;
+//             delete obj.apikey;
+//             localStorage.setItem("auth", JSON.stringify(obj));
+//         }
+//         const auth = buildAuthorization(obj);
+//         auth.toString = function() {
+//             return `z=${this.username}&y=${this.webApiKey}`;
+//         }
+//         return auth;
+//     }
+// }
 
-function showAuthModal() {
-    let template = document.getElementById("authModalTemplate");
-    let modal = template.content.cloneNode(true);
-    let button = modal.children[0].querySelector("button");
-    document.body.appendChild(modal);
-
-    return new Promise(resolve => {
-        button.addEventListener("click", ev => {
-            let modal = document.querySelector("div.authModal");
-            let auth = {
-                username: modal.querySelector("input[name='username']").value,
-                webApiKey: modal.querySelector("input[name='apikey']").value,
-            };
-            if (modal.querySelector("input[name='saveinfo']").checked) {
-                localStorage.setItem("auth", JSON.stringify(auth));
-            }
-            document.body.removeChild(modal);
-            resolve(buildAuthorization(auth));
-        });
-    });
-}
+// function showAuthModal() {
+//     let template = document.getElementById("authModalTemplate");
+//     let modal = template.content.cloneNode(true);
+//     let button = modal.children[0].querySelector("button");
+//     document.body.appendChild(modal);
+//
+//     return new Promise(resolve => {
+//         button.addEventListener("click", ev => {
+//             let modal = document.querySelector("div.authModal");
+//             let auth = {
+//                 username: modal.querySelector("input[name='username']").value,
+//                 webApiKey: modal.querySelector("input[name='apikey']").value,
+//             };
+//             if (modal.querySelector("input[name='saveinfo']").checked) {
+//                 localStorage.setItem("auth", JSON.stringify(auth));
+//             }
+//             document.body.removeChild(modal);
+//             resolve(buildAuthorization(auth));
+//         });
+//     });
+// }
 
 // let params = new URL(window.location).searchParams;
 // if (params.has("data")) {
@@ -314,17 +339,4 @@ function showAuthModal() {
 //         switchToTab(target);
 //     });
 // }
-
-function switchToTab(name) {
-    document.getElementById(name).style.display = "block";
-    for (const elem of document.querySelectorAll(`#content > :not(#${name})`)) {
-        elem.style.display = "none";
-    }
-    for (const elem of document.querySelectorAll("#tabs > div")) {
-        elem.classList.remove("selected");
-        if (elem.dataset.target == name) {
-            elem.classList.add("selected");
-        }
-    }
-}
 
