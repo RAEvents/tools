@@ -1,6 +1,8 @@
 import { createElement } from "preact";
-import { useRef } from "preact/hooks";
+import { useRef, useContext } from "preact/hooks";
+
 import * as css from "./menu.module.css";
+import { Settings } from "./settings.js";
 
 // https://github.com/twbs/bootstrap/blob/main/LICENSE
 const icons = {
@@ -16,13 +18,18 @@ function MenuButton(props) {
     </div>
 }
 
+function Link({ href, children }) {
+    const settings = useContext(Settings);
+    return <a href={`${settings.basepath}${href}`}>{children}</a>
+}
+
 export function MenuItems() {
     return <nav class={css.items}>
-        <a href="/tools/verify">verify</a>
-        <a href="/tools/gamblers">gamblers</a>
-        <a href="/tools/evergreen">evergreen</a>
-        <a href="/tools/untracked">untracked</a>
-        <a href="/tools/settings" aria-label="settings">{icons.gear}</a>
+        <Link href="/verify">verify</Link>
+        <Link href="/gamblers">gamblers</Link>
+        <Link href="/evergreen">evergreen</Link>
+        <Link href="/untracked">untracked</Link>
+        <Link href="/settings" aria-label="settings">{icons.gear}</Link>
     </nav>;
 }
 

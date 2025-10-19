@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noindex, nofollow">
+        <title>RAEvents Tools</title>
+        <style>body { background: #333; }</style>
+    </head>
+    <body>
+        <script>
+            const keepSegments = location.hostname.endsWith("github.io") ? 1 : 0;
+            const segments = location.pathname.split("/");
+
+            const pathname = segments.slice(keepSegments + 1).join("/");
+            const destination = `${pathname}${location.search}`;
+
+            const kept = segments.slice(1, keepSegments + 1).join("/");
+            const root = `${location.origin}${kept.length ? "/" + kept : ""}`;
+
+            location.assign(`${root}/?route=${btoa(destination)}`);
+        </script>
+    </body>
+</html>
