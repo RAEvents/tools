@@ -1,5 +1,4 @@
 import { getGameInfoAndUserProgress, getAchievementUnlocks } from "@retroachievements/api";
-import { getOption } from "./options.js";
 
 const sleep = ms => new Promise(resolve => setTimeout(() => resolve(), ms));
 
@@ -15,24 +14,24 @@ export function resetBackoff() {
     apiFailures = 0;
 }
 
-function formatDate(date) {
-    const year = date.getUTCFullYear();
-    const month = String(date.getUTCMonth() + 1).padStart(2, "0");
-    const day = String(date.getUTCDate()).padStart(2, "0");
-
-    switch (getOption("dateFormat")) {
-        case 0:
-            return `${year}-${month}-${day}`;
-        case 1:
-            return `${month}/${day}/${year}`;
-        case 2:
-            return `${day}/${month}/${year}`;
-        case 3:
-            return `${month}-${day}-${year}`;
-        case 4:
-            return `${day}-${month}-${year}`;
-    }
-}
+// function formatDate(date) {
+//     const year = date.getUTCFullYear();
+//     const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+//     const day = String(date.getUTCDate()).padStart(2, "0");
+//
+//     switch (getOption("dateFormat")) {
+//         case 0:
+//             return `${year}-${month}-${day}`;
+//         case 1:
+//             return `${month}/${day}/${year}`;
+//         case 2:
+//             return `${day}/${month}/${year}`;
+//         case 3:
+//             return `${month}-${day}-${year}`;
+//         case 4:
+//             return `${day}-${month}-${year}`;
+//     }
+// }
 
 export async function checkGame(auth, username, id, startDate, endDate) {
     let result;

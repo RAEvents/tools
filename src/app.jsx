@@ -4,7 +4,7 @@ import { LocationProvider, ErrorBoundary, Router, Route, useLocation } from "pre
 import "./app.css";
 
 import { Verify } from "./tools/verify.jsx";
-import { Menu } from "./menu.jsx";
+import { Menu } from "./components/menu.jsx";
 import { Settings, defaultSettings } from "./settings.js";
 
 function NotFound() {

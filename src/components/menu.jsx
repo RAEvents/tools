@@ -2,7 +2,7 @@ import { createElement } from "preact";
 import { useRef, useContext } from "preact/hooks";
 
 import * as css from "./menu.module.css";
-import { Settings } from "./settings.js";
+import { Settings } from "../settings.js";
 
 // https://github.com/twbs/bootstrap/blob/main/LICENSE
 const icons = {
